@@ -51,6 +51,10 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'faker'
 gem 'graphql'
+gem 'graphql-query-resolver'
+gem 'search_object'
+gem 'search_object_graphql'
+
 gem 'graphiql-rails', group: :development
 gem 'jwt'
 gem 'simple_command'

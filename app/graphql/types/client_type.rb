@@ -1,15 +1,13 @@
 Types::ClientType = GraphQL::ObjectType.define do
- name "ClientType"
+  name "Client"
+  interfaces [GraphQL::Relay::Node.interface]
+  global_id_field :id
 
- field :id, types.ID
- field :name, types.String
- field :address, types.String
+  field :name, types.String
+  field :address, types.String
+  field :orders, -> {types[Types::OrderType]}
 
- field :orders do
-   type Types::OrderType
-   description "orders made by this client"
-   resolve ->(client, args, context){
-     client.orders
-   }
- end
+  field :errors, types[types.String], "Reasons the object couldn't be created or updated" do
+    resolve ->(obj, args, ctx) { obj.errors.full_messages }
+  end
 end

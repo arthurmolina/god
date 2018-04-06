@@ -1,15 +1,14 @@
 Types::BatchType = GraphQL::ObjectType.define do
- name "BatchType"
+  name "Batch"
+  interfaces [GraphQL::Relay::Node.interface]
+  global_id_field :id
+ 
+  field :reference, types.String
+  field :status, types.String
+  #field :orders, -> {types[Types::OrderType]}
+  connection :orders, Types::OrderType.connection_type
 
- field :id, types.ID
- field :reference, types.String
- field :status, types.String
-
- field :orders do
-   type Types::OrderType
-   description "Orders associated to this batch"
-   resolve ->(batch, args, context){
-     batch.orders
-   }
- end
+  field :errors, types[types.String], "Reasons the object couldn't be created or updated" do
+    resolve ->(obj, args, ctx) { obj.errors.full_messages }
+  end
 end

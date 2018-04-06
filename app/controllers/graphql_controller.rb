@@ -42,12 +42,16 @@ class GraphqlController < ApplicationController
     return true if field.metadata[:is_public]
 
     unless @current_user = AuthorizeApiRequest.call(request.headers).result
-      head(:unauthorized)
+      GraphQL::ExecutionError.new("Error: Not authorized.")
+      render json: {message: "Not authorized.", response: 401}
+      #head(:unauthorized)
       return false
     end
 
-    unless field.metadata[:must_be].to_a.include? @session.user.role
-      head(:unauthorized)
+    unless field.metadata[:must_be].to_a.include? @current_user.role
+      GraphQL::ExecutionError.new("Error: Not authorized.")
+      render json: {message: "Not authorized.", response: 401}
+      #head(:unauthorized)
       return false
     end
   end    

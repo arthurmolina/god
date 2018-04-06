@@ -2,27 +2,31 @@ Types::QueryType = GraphQL::ObjectType.define do
   name "Query"
   
   field :order, Types::OrderType do
-    argument :id, types.ID
-    description "Orders"
+    argument :id, !types.ID
+    description "Order"
+    must_be [1,2,3,4]
 
     resolve ->(obj, args, ctx) {
       Order.where(id: args[:id]).first
     }
   end
 
-  field :allOrder, Types::OrderType do
+  field :allOrders, types[Types::OrderType] do
     argument :id, types.ID
     description "Orders"
+
+    must_be [1,2,3,4]
 
     resolve ->(obj, args, ctx) {
       Order.all
     }
   end
 
-  field :purchase_channel, Types::PurchaseChannelType do
-    argument :id, types.ID
+  field :purchaseChannel, Types::PurchaseChannelType do
+    argument :id, !types.ID
     description "Purchase Channels"
-
+    must_be [1,2,3,4]
+    
     resolve ->(obj, args, ctx) {
       PurchaseChannel.where(id: args[:id]).first
     }

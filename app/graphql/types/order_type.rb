@@ -1,8 +1,8 @@
 Types::OrderType = GraphQL::ObjectType.define do
  name "OrderType"
 
- field :id, types.ID
- field :reference, types.String
+ #field :id, types.ID
+ field :reference, types.ID
  field :total_value, types.Float
  field :line_items, types.String, "Line items"
  field :status, types.String, "Status of the order"

@@ -151,16 +151,21 @@ Types::QueryType = GraphQL::ObjectType.define do
 
   field :reportSummary, types[Types::BatchReportPerMonthType] do
     argument :year, !types.Int
-    argument :purchase_channel_agregated, types.Bool, default_value: false
+    argument :purchase_channel_agregated, types.Boolean, default_value: true
     description "Financial Report Summary"
 
     resolve -> (obj, args, ctx) {
       begin
-        batchReport = BatchReport.
-          where(status: 'sent').where("extract(year from updated_at) = ?", args[:year]).
-          group(:purchase_channel_id, "extract(month from updated_at)").
+        batchReport = BatchReport.where(status: 'sent').where("extract(year from updated_at) = ?", args[:year]).
           order("extract(month from updated_at)").
-          select("extract(month from updated_at) as month, purchase_channel_id, sum(total_value) total_value, sum(orders) orders")
+          group("extract(month from updated_at)").
+          select("extract(month from updated_at) as month, sum(total_value) total_value, sum(orders) orders, 0 purchase_channel_id")
+
+        if args[:purchase_channel_agregated]
+          batchReport = batchReport.group("purchase_channel_id, extract(month from updated_at)").
+            select("extract(month from updated_at) as month, purchase_channel_id, sum(total_value) total_value, sum(orders) orders")
+        end
+        batchReport
       rescue Exception => e
         GraphQL::ExecutionError.new("Error: #{e.to_s}")
       end

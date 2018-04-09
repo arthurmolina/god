@@ -5,6 +5,7 @@ class User < ApplicationRecord
   validates :name, :email, presence: true
   validates :email, uniqueness: true
   belongs_to :purchase_channel
+  enum role: {stores: 1, production: 2, transportation:3, admin: 4}
 
   def token(user = nil)
     if user = self

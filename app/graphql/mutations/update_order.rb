@@ -1,16 +1,21 @@
 class Mutations::UpdateOrder < GraphQL::Function
+  argument :id, types.ID
+  argument :reference, types.String
   argument :total_value, types.Float
   argument :line_items, types.String
 
   type Types::OrderType # especificação do tipo de retorno
 
   def call(obj, args, context)
-    return { errors: 'Order not found' } unless order = Order.where(reference: args[:reference]).first # busca o User a ser alterado
+    order = Order.where(reference: args[:reference]).first
+    order = Order.where(id: args[:id]).first if order.blank?
+    raise "Order not found" if order.blank?
+    order.update_attributes!(args.to_h)
 
-    if order.update_attributes(args.to_h)
-      { order: order }
-    else
-      { order: order.errors.to_a }
-    end
+  rescue ActiveRecord::RecordInvalid => e
+    GraphQL::ExecutionError.new("Invalid input: #{e.record.errors.full_messages.join(', ')}")
+  rescue Exception => e
+    GraphQL::ExecutionError.new("Error: #{e.to_s}")
   end
 end
+

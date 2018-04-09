@@ -6,7 +6,6 @@ class GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      # Query context goes here, for example:
       current_user: @current_user,
     }
     result = GodSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
@@ -34,26 +33,45 @@ class GraphqlController < ApplicationController
   end
 
   def check_authentication
-    return true
     parsed_query = GraphQL::Query.new GodSchema, params[:query]
-    operation = parsed_query.selected_operation.selections.first.name
-    return true if operation.in? ['__schema', 'login', 'sign_up', 'allOrders']
-
-    field = GodSchema.query.fields[operation] || GodSchema.mutation.fields[operation]
-    return true if field.metadata[:is_public]
-
-    unless @current_user = AuthorizeApiRequest.call(request.headers).result
-      GraphQL::ExecutionError.new("Error: Not authorized.")
-      render json: {message: "Not authorized.", response: 401}
-      #head(:unauthorized)
-      return false
+    if !parsed_query.selected_operation.nil?
+      operation = parsed_query.selected_operation.selections.first.name
+      operations = parsed_query.selected_operation.selections.map(&:name)
+      return true if operation.in? ['__schema', 'login', 'sign_up', 'allOrders', 'auth']
     end
 
-    unless field.metadata[:must_be].to_a.include? @current_user.role
-      GraphQL::ExecutionError.new("Error: Not authorized.")
-      render json: {message: "Not authorized.", response: 401}
-      #head(:unauthorized)
-      return false
+    queries_list = GodSchema.query.fields.keys
+    mutations_list = GodSchema.mutation.fields.keys
+
+    request_auth = request.headers
+    if params['variables']['Authorization'].present?
+      request_auth = params['variables']
     end
-  end    
+
+    #return true
+
+    #binding.pry
+    #field = GodSchema.query.fields[operation] || GodSchema.mutation.fields[operation]
+    #return true if field.metadata[:is_public]
+    
+    @current_user = AuthorizeApiRequest.call(request_auth).result
+    
+    #binding.pry
+    #unless @current_user = AuthorizeApiRequest.call(request_auth).result
+    #  GraphQL::ExecutionError.new("Error: Not authorized.")
+    #  render json: {message: "Not authorized.", response: 401}
+    #  #head(:unauthorized)
+    #  return false
+    #end
+
+    #binding.pry
+
+    #unless field.metadata[:must_be].to_a.include? @current_user.role
+    # =>   GraphQL::ExecutionError.new("Error: Not authorized.")
+    #  render json: {message: "Not authorized.", response: 401}
+    #  #head(:unauthorized)
+    #  return false
+    #end
+  end 
+
 end

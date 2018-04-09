@@ -2,8 +2,9 @@ Types::MutationType = GraphQL::ObjectType.define do
   name "Mutation"
 
   # Authentication
-  field :login, function: Mutations::Login.new
+  field :login,   function: Mutations::Login.new
   field :sign_up, function: Mutations::SignUp.new
+  field :auth,    function: Mutations::Authenticate.new
 
   # Order management
   field :createOrder, function: Mutations::CreateOrder.new
@@ -11,7 +12,6 @@ Types::MutationType = GraphQL::ObjectType.define do
 
   # Batch management
   field :createBatch,  function: Mutations::CreateBatch.new
-  field :produceBatch, function: Mutations::ProduceBatch.new
-  field :closeBatch, function: Mutations::CloseBatch.new
+  field :changeStatusBatch, function: Mutations::ChangeStatusBatch.new
   
 end

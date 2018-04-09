@@ -7,7 +7,13 @@ Types::QueryType = GraphQL::ObjectType.define do
   # PLURALS ###################################################################
   connection :clients, Types::ClientType.connection_type, function: Resolvers::ClientsSearch
   connection :orders,  Types::OrderType.connection_type,  function: Resolvers::OrdersSearch
-  connection :batches, Types::BatchType.connection_type,  function: Resolvers::BatchesSearch
+  connection :batches, Types::BatchType.connection_type,  function: Resolvers::BatchesSearch do
+    binding.pry
+    raise "Not connected" unless @current_user.present?
+  rescue Exception => e
+    GraphQL::ExecutionError.new("Error: #{e.to_s}")
+  end
+  
   connection :users,   Types::UserType.connection_type,   function: Resolvers::UsersSearch do
     must_be [1,2,3,4]
   end

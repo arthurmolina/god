@@ -3,13 +3,13 @@ class Mutations::SignUp < GraphQL::Function
   argument :email, types.String
   argument :password, types.String
   argument :password_confirmation, types.String
-  argument :role, types.Int
   argument :purchase_channel_id, types.Int
 
   type Types::UserType
 
   def call(obj, args, context)
     user = User.new(args.to_h)
+    user.role = 'stores'
     if user.save!
       user
     else

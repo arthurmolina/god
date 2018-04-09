@@ -1,26 +1,52 @@
-GOD - Gocase Order Dispatcher
+# GOD - Gocase Order Dispatcher
 
-# README
+## Instalation
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Download or clone this repo
 
-Things you may want to cover:
+    git clone 
 
-* Ruby version
+Must setup the database in `config/databased.yml` and then execute:
 
-* System dependencies
+    $ bundle install
+    $ rails db:create db:migrate db:seed
 
-* Configuration
+To run the application:
 
-* Database creation
+    $ rails s
 
-* Database initialization
+## Stack used in this project
 
-* How to run the test suite
+ - Ruby v2.5.0
+ - Rails API v5.1.5
+ - GraphQL
+ - PostgreSQL v9.6.6 (older version can be used)
 
-* Services (job queues, cache servers, search engines, etc.)
+## API Documentation
 
-* Deployment instructions
+The API documentation and interaction is available here: http://localhost:3000/gq
 
-* ...
+### Authentication
+
+To create a user:
+
+    $ curl -H "Content-Type: application/json" -X POST -d '{"query":"mutation signUp($name: String, $email: String, $password: String, $purchase_channel_id: Int){\n  sign_up(name: $name, email: $email, password: $password, password_confirmation:$password, purchase_channel_id: $purchase_channel_id) {\n    name\n    token\n  }\n}\n","variables":{"name":"Arthur","email":"arthurmolina@gmail.com","password":"123","purchase_channel_id":1},"operationName":"signUp"}' http://localhost:3000/graphql
+
+User has four roles: admin, stores, production, transportation.
+
+To login:
+
+    $ curl -H "Content-Type: application/json" -X POST -d '{"query":"mutation login($email: String, $password: String){\n  login(email: $email, password: $password) {\n    name\n    token\n  }\n}\n","variables":{"email":"arthurmolina@gmail.com","password":"123","purchase_channel_id":1},"operationName":"login"}
+
+It will receive a token that can be used as _Header: Authorization_ or as a variable _"Authorization"_.
+
+### Queries
+
+    $ curl -H "Authorization: <access_token>" http://localhost:3000/graphql
+
+## Test
+
+Just run:
+
+    $ rspec
+

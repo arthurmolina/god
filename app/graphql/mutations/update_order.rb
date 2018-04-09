@@ -9,6 +9,7 @@ class Mutations::UpdateOrder < GraphQL::Function
   def call(obj, args, context)
     order = Order.where(reference: args[:reference]).first
     order = Order.where(id: args[:id]).first if order.blank?
+    raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'admin'])
     raise "Order not found" if order.blank?
     order.update_attributes!(args.to_h)
 

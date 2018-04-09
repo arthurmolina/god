@@ -64,6 +64,7 @@ class Resolvers::UsersSearch
   def fetch_results
     # NOTE: Don't run QueryResolver during tests
     return super unless context.present?
+    raise "Not connected or no permission to this query." unless context[:current_user].present? && context[:current_user].role.in?(['admin'])
 
     GraphQL::QueryResolver.run(User, context, Types::UserType) do
       super

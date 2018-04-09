@@ -32,7 +32,6 @@ class Resolvers::BatchesSearch
   end
 
   def normalize_filters(value, branches = [])
-    binding.pry
     scope = Batch.all
     scope = scope.like(:reference, value['reference_contains']) if value['reference_contains']
     scope = scope.like(:status, value['status']) if value['status']
@@ -55,8 +54,7 @@ class Resolvers::BatchesSearch
   def fetch_results
     # NOTE: Don't run QueryResolver during tests
     return super unless context.present?
-
-    raise "Not connected or no permission." unless context[:current_user].present? && context[:current_user].role > 1
+    raise "Not connected or no permission to this query." unless context[:current_user].present? && context[:current_user].role.in?(['production', 'transportation', 'admin'])
 
     GraphQL::QueryResolver.run(Batch, context, Types::BatchType) do
       super

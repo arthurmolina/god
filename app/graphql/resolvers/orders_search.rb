@@ -4,7 +4,7 @@ require 'graphql/query_resolver'
 class Resolvers::OrdersSearch
   include SearchObject.module(:graphql)
 
-  scope { Order.all }
+  scope { context[:current_user].role == 'stores' ? Order.where(purchase_channel_id: context[:current_user].purchase_channel_id) : Order.all }
 
   type !types[Types::OrderType]
 
@@ -34,7 +34,7 @@ class Resolvers::OrdersSearch
   end
 
   def normalize_filters(value, branches = [])
-    scope = Order.all
+    scope = context[:current_user].role == 'stores' ? Order.where(purchase_channel_id: context[:current_user].purchase_channel_id) : Order.all
     scope = scope.like(:reference, value['reference_contains']) if value['reference_contains']
     scope = scope.like(:total_value, value['total_value_contains']) if value['total_value_contains']
     scope = scope.like(:line_items, value['line_items_contains']) if value['line_items_contains']
@@ -58,6 +58,7 @@ class Resolvers::OrdersSearch
   def fetch_results
     # NOTE: Don't run QueryResolver during tests
     return super unless context.present?
+    raise "Not connected or no permission to this query." unless context[:current_user].present? && context[:current_user].role.in?(['stores', 'production', 'transportation', 'admin'])
 
     GraphQL::QueryResolver.run(Order, context, Types::OrderType) do
       super

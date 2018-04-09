@@ -9,6 +9,7 @@ class Mutations::CreateOrder < GraphQL::Function
   type Types::OrderType # especificação do tipo de retorno
 
   def call(obj, args, context)
+    raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'admin'])
     Order.create!(args.to_h)
   rescue ActiveRecord::RecordInvalid => e
     GraphQL::ExecutionError.new("Invalid input: #{e.record.errors.full_messages.join(', ')}")

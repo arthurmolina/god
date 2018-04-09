@@ -15,6 +15,7 @@ class Mutations::ChangeStatusBatch < GraphQL::Function
   def call(obj, args, context)
     batch = Batch.where(reference: args[:reference]).first
     batch = Batch.where(id: args[:id]).first if batch.blank?
+    raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['production', 'transportation', 'admin'])
     raise "Batch not found" if batch.blank?
 
     batch.update! status: args[:status]

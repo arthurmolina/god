@@ -15,7 +15,10 @@ class Resolvers::OrdersSearch
     argument :reference_contains, types.String
     argument :total_value_contains, types.String
     argument :line_items_contains, types.String
-    argument :purchase_channel, types.String
+    argument :purchase_channel_id, types[types.Int]
+    argument :delivery_service_id, types[types.Int]
+    argument :only_not_associated_to_batch, types.Boolean
+    argument :only_associated_to_batch, types.Boolean
   end
 
   SortEnum = GraphQL::EnumType.define do
@@ -39,6 +42,10 @@ class Resolvers::OrdersSearch
     scope = scope.like(:total_value, value['total_value_contains']) if value['total_value_contains']
     scope = scope.like(:line_items, value['line_items_contains']) if value['line_items_contains']
     scope = scope.like(:total_value, value['total_value_contains']) if value['total_value_contains']
+    scope = scope.where(purchase_channel_id: value['purchase_channel_id']) if value['purchase_channel_id']
+    scope = scope.where(delivery_service_id: value['delivery_service_id']) if value['delivery_service_id']
+    scope = scope.where(batch_id: nil) if value['only_not_associated_to_batch'] && value['only_not_associated_to_batch'] == true
+    scope = scope.where.not(batch_id: nil) if value['only_associated_to_batch'] && value['only_associated_to_batch'] == true
 
     branches << scope
 

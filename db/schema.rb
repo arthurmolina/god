@@ -17,11 +17,9 @@ ActiveRecord::Schema.define(version: 20180409122848) do
 
   create_table "batches", force: :cascade do |t|
     t.string "reference"
-    t.bigint "purchase_channel_id"
-    t.integer "status"
+    t.integer "status", default: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["purchase_channel_id"], name: "index_batches_on_purchase_channel_id"
     t.index ["reference"], name: "index_batches_on_reference", unique: true
   end
 
@@ -80,7 +78,6 @@ ActiveRecord::Schema.define(version: 20180409122848) do
   create_table "view_batch_reports", force: :cascade do |t|
   end
 
-  add_foreign_key "batches", "purchase_channels"
   add_foreign_key "orders", "batches"
   add_foreign_key "orders", "clients"
   add_foreign_key "orders", "delivery_services"

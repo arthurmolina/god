@@ -5,7 +5,8 @@ Types::BatchType = GraphQL::ObjectType.define do
  
   field :reference, types.String
   field :status, types.String
-  #field :orders, -> {types[Types::OrderType]}
+  field :purchase_channel, Types::PurchaseChannelType
+  field :purchase_channel_id, types.Int
   connection :orders, Types::OrderType.connection_type
 
   field :errors, types[types.String], "Reasons the object couldn't be created or updated" do

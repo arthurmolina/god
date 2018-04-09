@@ -14,7 +14,7 @@ class Mutations::Login < GraphQL::Function
       raise "Invalid email or password"
     end
   rescue Exception => e
-    GraphQL::ExecutionError.new("Error: #{e.to_s}")
+    GraphQL::ExecutionError.new(e.to_s)
   end
 
 end

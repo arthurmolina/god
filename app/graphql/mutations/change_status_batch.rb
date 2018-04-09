@@ -23,7 +23,7 @@ class Mutations::ChangeStatusBatch < GraphQL::Function
   rescue ActiveRecord::RecordInvalid => e
     GraphQL::ExecutionError.new("Invalid input: #{e.record.errors.full_messages.join(', ')}")
   rescue Exception => e
-    GraphQL::ExecutionError.new("Error: #{e.to_s}")
+    GraphQL::ExecutionError.new(e.to_s)
   end
 
 end

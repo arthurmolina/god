@@ -27,7 +27,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         raise "Not connected or no permission to this query." unless ctx[:current_user].present?
         ctx[:current_user]
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
       }
   end
@@ -40,7 +40,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['production', 'transportation', 'admin'])
         Batch.where(id: args[:id]).first
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
     }
   end
@@ -54,7 +54,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'production', 'transportation', 'admin'])
         Order.where(id: args[:id]).first
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
     }
   end
@@ -68,7 +68,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'transportation', 'admin'])
         Client.where(id: args[:id]).first
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
     }
   end
@@ -82,7 +82,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['admin'])
         User.where(id: args[:id]).first
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
     }
   end
@@ -96,7 +96,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'admin'])
         PurchaseChannel.where(id: args[:id]).first
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
     }
   end
@@ -110,7 +110,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'transportation', 'admin'])
         DeliveryService.where(id: args[:id]).first
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
     }
   end
@@ -144,7 +144,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         batchReport = BatchReport.where(purchase_channel_id: args[:purchase_channel_id], status: 'sent').where("extract(year from updated_at) = ?", args[:year])
         batchReport = batchReport.where("extract(month from updated_at) = ?", months.index(args[:month])) if args[:month].present?
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
     }
   end
@@ -167,7 +167,7 @@ Types::QueryType = GraphQL::ObjectType.define do
         end
         batchReport
       rescue Exception => e
-        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+        GraphQL::ExecutionError.new(e.to_s)
       end
     }
   end

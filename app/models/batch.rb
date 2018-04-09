@@ -1,28 +1,25 @@
 class Batch < ApplicationRecord
   has_many      :orders
-  belongs_to    :purchase_channel, optional: true
-  validates     :reference, uniqueness: true
+  validates     :reference, uniqueness: true, allow_nil: false, allow_blank: false
+  validates_presence_of :reference
+  validates     :status, presence: true, allow_nil: false
   validate      :same_purchase_channel, :status_change
-  before_create :define_purchase_channel_and_status
 
   enum status: {production: 2, closing: 3, sent: 4}
 
-  private
-
-  def define_purchase_channel_and_status
-    self.purchase_channel_id = self.orders.first.purchase_channel_id
-    self.status = 2 # Created a batch to production.
+  def purchase_channel_id
+    self.orders.present? ? self.orders.first.purchase_channel_id : nil
   end
 
+  def purchase_channel
+    self.orders.present? ? self.orders.first.purchase_channel : nil
+  end
+
+  private
   def same_purchase_channel
     purchase = self.orders.collect(&:purchase_channel_id).uniq
     if purchase.count > 1
       errors.add(:purchase_channel_id, "orders with more than one different purchase channel")
-      return false
-    end
-
-    if !purchase_channel_id.nil? && purchase_channel_id != purchase[0]
-      errors.add(:purchase_channel_id, "must be the same as the orders")
       return false
     end
   end

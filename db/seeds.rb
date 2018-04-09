@@ -30,10 +30,10 @@ DeliveryService.create!(
 
 puts 'Creating clients...'
 i = 0
-while i < 5 do
+while i < 10 do
   Client.create!(
     {
-      name: Faker::StarWars.character, 
+      name: Faker::StarWars.unique.character, 
       address: "#{Faker::Address.street_address}, #{Faker::StarWars.planet}"
     })
   i += 1
@@ -41,7 +41,7 @@ end
 
 puts 'Creating orders...'
 i = 0
-while i < 5 do
+while i < 50 do
   Order.create!(
     {
       reference: "BR#{Faker::Number.number(6)}",
@@ -56,3 +56,49 @@ while i < 5 do
     })
   i += 1
 end
+
+puts 'Creating batches...'
+PurchaseChannel.all.each do |purchase_channel|
+  Batch.create!(
+    {
+      reference: "P#{Faker::Number.number(6)}",
+      status: Batch.statuses.keys[rand(Batch.statuses.size)],
+      orders: Order.where(purchase_channel: purchase_channel, batch_id: nil).first(3)
+    })
+end
+
+puts 'Creating user...'
+User.create!([
+  {
+    name: 'ArtzAdmin',
+    email: 'arthurmolina@gmail.com',
+    password: '123',
+    password_confirmation: '123',
+    role: 'admin',
+    purchase_channel: PurchaseChannel.offset(rand(PurchaseChannel.count)).first
+  },
+  {
+    name: 'StoreUser',
+    email: 'store@example.com',
+    password: '123',
+    password_confirmation: '123',
+    role: 'stores',
+    purchase_channel: PurchaseChannel.offset(rand(PurchaseChannel.count)).first
+  },
+  {
+    name: 'ProductionUser',
+    email: 'prod@example.com',
+    password: '123',
+    password_confirmation: '123',
+    role: 'admin',
+    purchase_channel: PurchaseChannel.offset(rand(PurchaseChannel.count)).first
+  },
+  {
+    name: 'TransportationUser',
+    email: 'transportation@example.com',
+    password: '123',
+    password_confirmation: '123',
+    role: 'transportation',
+    purchase_channel: PurchaseChannel.offset(rand(PurchaseChannel.count)).first
+  }
+])

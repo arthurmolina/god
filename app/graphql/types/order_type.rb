@@ -8,6 +8,9 @@ Types::OrderType = GraphQL::ObjectType.define do
   field :line_items, types.String, "Line items"
   field :status, types.String, "Status of the order"
   field :created_at, Types::DateTimeType
+  field :purchase_channel_id, types.Int
+  field :delivery_service_id, types.Int
+  field :batch_id, types.Int
 
   field :purchase_channel, -> {Types::PurchaseChannelType}
   field :client,           -> {Types::ClientType}

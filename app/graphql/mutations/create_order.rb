@@ -8,7 +8,7 @@ class Mutations::CreateOrder < GraphQL::Function
 
   type Types::OrderType # especificação do tipo de retorno
 
-  def call(obj, args, context)
+  def call(obj, args, ctx)
     raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'admin'])
     Order.create!(args.to_h)
   rescue ActiveRecord::RecordInvalid => e

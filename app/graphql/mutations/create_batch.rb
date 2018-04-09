@@ -5,7 +5,7 @@ class Mutations::CreateBatch < GraphQL::Function
 
   type Types::BatchType # especificação do tipo de retorno
 
-  def call(obj, args, context)
+  def call(obj, args, ctx)
     raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['production', 'admin'])
     Batch.create!(args.to_h)
   rescue ActiveRecord::RecordInvalid => e

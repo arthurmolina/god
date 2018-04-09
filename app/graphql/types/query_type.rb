@@ -114,4 +114,56 @@ Types::QueryType = GraphQL::ObjectType.define do
       end
     }
   end
+
+  field :report, types[Types::BatchReportType] do
+    Months = GraphQL::EnumType.define do
+      name 'Months'
+
+      value 'Jan'
+      value 'Fev'
+      value 'Mar'
+      value 'Apr'
+      value 'May'
+      value 'Jun'
+      value 'Jul'
+      value 'Aug'
+      value 'Sep'
+      value 'Oct'
+      value 'Nov'
+      value 'Dec'
+    end
+
+    argument :year, !types.Int
+    argument :month, Months
+    argument :purchase_channel_id, types.Int
+    description "Financial Report"
+
+    resolve -> (obj, args, ctx) {
+      begin
+        months = ['All', 'Jan', 'Fev', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        batchReport = BatchReport.where(purchase_channel_id: args[:purchase_channel_id], status: 'sent').where("extract(year from updated_at) = ?", args[:year])
+        batchReport = batchReport.where("extract(month from updated_at) = ?", months.index(args[:month])) if args[:month].present?
+      rescue Exception => e
+        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+      end
+    }
+  end
+
+  field :reportSummary, types[Types::BatchReportPerMonthType] do
+    argument :year, !types.Int
+    argument :purchase_channel_agregated, types.Bool, default_value: false
+    description "Financial Report Summary"
+
+    resolve -> (obj, args, ctx) {
+      begin
+        batchReport = BatchReport.
+          where(status: 'sent').where("extract(year from updated_at) = ?", args[:year]).
+          group(:purchase_channel_id, "extract(month from updated_at)").
+          order("extract(month from updated_at)").
+          select("extract(month from updated_at) as month, purchase_channel_id, sum(total_value) total_value, sum(orders) orders")
+      rescue Exception => e
+        GraphQL::ExecutionError.new("Error: #{e.to_s}")
+      end
+    }
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180405171023) do
+ActiveRecord::Schema.define(version: 20180409122848) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -75,6 +75,9 @@ ActiveRecord::Schema.define(version: 20180405171023) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["name"], name: "index_users_on_name", unique: true
     t.index ["purchase_channel_id"], name: "index_users_on_purchase_channel_id"
+  end
+
+  create_table "view_batch_reports", force: :cascade do |t|
   end
 
   add_foreign_key "batches", "purchase_channels"

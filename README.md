@@ -18,7 +18,7 @@ To run the application:
 ## Stack used in this project
 
  - Ruby v2.5.0
- - Rails API v5.1.6
+ - Rails API v5.2.0
  - GraphQL
  - PostgreSQL v9.6.6 (older version can be used)
 

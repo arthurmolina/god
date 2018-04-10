@@ -8,7 +8,6 @@ Types::BatchReportType = GraphQL::ObjectType.define do
   field :purchase_channel, Types::PurchaseChannelType
   field :total_value, types.Float
   field :orders, types.Int
-  #field :delivery_service, Types::DeliveryServiceType
 
   field :errors, types[types.String], "Reasons the object couldn't be created or updated" do
     resolve ->(obj, args, ctx) { obj.errors.full_messages }

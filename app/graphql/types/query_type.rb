@@ -33,12 +33,19 @@ Types::QueryType = GraphQL::ObjectType.define do
   end
 
   field :batch, Types::OrderType do
-    argument :id, !types.ID
+    argument :id, types.ID
+    argument :reference, types.String
     description "Batch of Orders"
     resolve ->(obj, args, ctx) { 
       begin
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['production', 'transportation', 'admin'])
-        Batch.where(id: args[:id]).first
+        if args[:id]
+          record_class_name, record_id = GraphQL::Schema::UniqueWithinType.decode(args[:id])
+          raise "ID error" unless record_class_name == 'Batch'
+          Batch.where(id: record_id ).first
+        else
+          Batch.where(reference: args[:reference]).first
+        end
       rescue Exception => e
         GraphQL::ExecutionError.new(e.to_s)
       end
@@ -46,13 +53,20 @@ Types::QueryType = GraphQL::ObjectType.define do
   end
 
   field :order, Types::OrderType do
-    argument :id, !types.ID
+    argument :id, types.ID
+    argument :reference, types.String
     description "Order"
 
     resolve ->(obj, args, ctx) { 
       begin
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'production', 'transportation', 'admin'])
-        Order.where(id: args[:id]).first
+        if args[:id]
+          record_class_name, record_id = GraphQL::Schema::UniqueWithinType.decode(args[:id])
+          raise "ID error" unless record_class_name == 'Order'
+          Order.where(id: record_id ).first
+        else
+          Order.where(reference: args[:reference]).first
+        end
       rescue Exception => e
         GraphQL::ExecutionError.new(e.to_s)
       end
@@ -60,13 +74,20 @@ Types::QueryType = GraphQL::ObjectType.define do
   end
 
   field :client, Types::ClientType do
-    argument :id, !types.ID
+    argument :id, types.ID
+    argument :reference, types.String
     description "Client"
 
     resolve ->(obj, args, ctx) { 
       begin
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'transportation', 'admin'])
-        Client.where(id: args[:id]).first
+        if args[:id]
+          record_class_name, record_id = GraphQL::Schema::UniqueWithinType.decode(args[:id])
+          raise "ID error" unless record_class_name == 'Client'
+          Client.where(id: record_id ).first
+        else
+          Client.where(reference: args[:reference]).first
+        end
       rescue Exception => e
         GraphQL::ExecutionError.new(e.to_s)
       end
@@ -74,13 +95,20 @@ Types::QueryType = GraphQL::ObjectType.define do
   end
 
   field :user, Types::UserType do
-    argument :id, !types.ID
+    argument :id, types.ID
+    argument :reference, types.String
     description "User"
 
     resolve ->(obj, args, ctx) { 
       begin
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['admin'])
-        User.where(id: args[:id]).first
+        if args[:id]
+          record_class_name, record_id = GraphQL::Schema::UniqueWithinType.decode(args[:id])
+          raise "ID error" unless record_class_name == 'User'
+          User.where(id: record_id ).first
+        else
+          User.where(reference: args[:reference]).first
+        end
       rescue Exception => e
         GraphQL::ExecutionError.new(e.to_s)
       end
@@ -88,13 +116,20 @@ Types::QueryType = GraphQL::ObjectType.define do
   end
 
   field :purchaseChannel, Types::PurchaseChannelType do
-    argument :id, !types.ID
+    argument :id, types.ID
+    argument :reference, types.String
     description "Purchase Channels"
 
     resolve ->(obj, args, ctx) { 
       begin
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'admin'])
-        PurchaseChannel.where(id: args[:id]).first
+        if args[:id]
+          record_class_name, record_id = GraphQL::Schema::UniqueWithinType.decode(args[:id])
+          raise "ID error" unless record_class_name == 'PurchaseChannel'
+          PurchaseChannel.where(id: record_id ).first
+        else
+          PurchaseChannel.where(reference: args[:reference]).first
+        end
       rescue Exception => e
         GraphQL::ExecutionError.new(e.to_s)
       end
@@ -102,13 +137,20 @@ Types::QueryType = GraphQL::ObjectType.define do
   end
 
   field :deliveryService, Types::DeliveryServiceType do
-    argument :id, !types.ID
+    argument :id, types.ID
+    argument :reference, types.String
     description "Delivery Service"
 
     resolve ->(obj, args, ctx) { 
       begin
         raise "Not connected or no permission to this query." unless ctx[:current_user].present? && ctx[:current_user].role.in?(['stores', 'transportation', 'admin'])
-        DeliveryService.where(id: args[:id]).first
+        if args[:id]
+          record_class_name, record_id = GraphQL::Schema::UniqueWithinType.decode(args[:id])
+          raise "ID error" unless record_class_name == 'DeliveryService'
+          DeliveryService.where(id: record_id ).first
+        else
+          DeliveryService.where(reference: args[:reference]).first
+        end
       rescue Exception => e
         GraphQL::ExecutionError.new(e.to_s)
       end

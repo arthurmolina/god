@@ -13,7 +13,7 @@ class Resolvers::BatchesSearch
 
     argument :OR, -> { types[BatchFilter] }
     argument :reference_contains, types.String
-    argument :status, types.String
+    argument :status, StatusEnum
   end
 
   SortEnum = GraphQL::EnumType.define do
@@ -21,6 +21,14 @@ class Resolvers::BatchesSearch
 
     value 'createdAt_ASC'
     value 'createdAt_DESC'
+  end
+
+  StatusEnum = GraphQL::EnumType.define do
+    name 'StatusBatch'
+
+    value 'production'
+    value 'closing'
+    value 'sent'
   end
 
   option :filter, type: BatchFilter, with: :apply_filter
@@ -34,7 +42,7 @@ class Resolvers::BatchesSearch
   def normalize_filters(value, branches = [])
     scope = Batch.all
     scope = scope.like(:reference, value['reference_contains']) if value['reference_contains']
-    scope = scope.like(:status, value['status']) if value['status']
+    scope = scope.where(status: value['status']) if value['status']
 
     branches << scope
 

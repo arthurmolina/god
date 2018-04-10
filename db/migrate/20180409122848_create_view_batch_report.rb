@@ -7,13 +7,12 @@ class CreateViewBatchReport < ActiveRecord::Migration[5.1]
             select batch_id id,
                sum(total_value) total_value,
                count(1) orders,
-               delivery_service_id,
                purchase_channel_id
             from orders
             where batch_id is not null
-            group by batch_id, purchase_channel_id, delivery_service_id
+            group by batch_id, purchase_channel_id
           )
-          select b.*, o.purchase_channel_id, o.total_value, o.delivery_service_id, o.orders
+          select b.*, o.purchase_channel_id, o.total_value, o.orders
           from batches b 
           left join orders_cto o ON o.id = b.id
         );

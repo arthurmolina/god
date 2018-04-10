@@ -11,6 +11,6 @@ class Order < ApplicationRecord
   attr_reader :status
 
   def status
-    batch&.status || 1
+    batch&.status || 'new_order'
   end
 end
